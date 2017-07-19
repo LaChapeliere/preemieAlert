@@ -60,7 +60,6 @@
 #include "arduino.h"
 #include "spo2_algorithm.h"
 
-#if defined(ARDUINO_AVR_UNO)
 //Arduino Uno doesn't have enough SRAM to store 100 samples of IR led data and red led data in 32-bit format
 //To solve this problem, 16-bit MSB of the sampled data will be truncated.  Samples become 16-bit data.
 
@@ -69,10 +68,7 @@ void maxim_heart_rate_and_oxygen_saturation(uint16_t *pun_ir_buffer, int32_t n_i
 
 //void maxim_heart_rate_and_oxygen_saturation(uint16_t *pun_ir_buffer, int32_t n_ir_buffer_length, uint16_t *pun_red_buffer, int32_t *pn_spo2, int8_t *pch_spo2_valid, 
 //                int32_t *pn_heart_rate, int8_t *pch_hr_valid)
-#else
-void maxim_heart_rate_and_oxygen_saturation(uint32_t *pun_ir_buffer, int32_t n_ir_buffer_length, uint32_t *pun_red_buffer, int32_t *pn_spo2, int8_t *pch_spo2_valid, 
-                int32_t *pn_heart_rate, int8_t *pch_hr_valid)
-#endif
+
 /**
 * \brief        Calculate the heart rate and SpO2 level
 * \par          Details
@@ -109,7 +105,7 @@ void maxim_heart_rate_and_oxygen_saturation(uint32_t *pun_ir_buffer, int32_t n_i
   un_ir_mean =0; 
   for (k=0 ; k<n_ir_buffer_length ; k++ ) un_ir_mean += pun_ir_buffer[k] ;
   un_ir_mean =un_ir_mean/n_ir_buffer_length ;
-    
+
   // remove DC and invert signal so that we can use peak detector as valley detector
   for (k=0 ; k<n_ir_buffer_length ; k++ )  
     an_x[k] = -1*(pun_ir_buffer[k] - un_ir_mean) ; 

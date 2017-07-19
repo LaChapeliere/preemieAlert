@@ -1,5 +1,6 @@
-/*Source :
-   modifications by @anneclairebrld
+/* BPM and SPO2 sensor.
+ * source: https://github.com/sparkfun/MAX30105_Particle_Sensor_Breakout
+ * modifications by @anneclairebrld: https://github.com/anneclairebrld
 */
 
 #include<Wire.h>
@@ -21,29 +22,40 @@ int beatAvg;
 
 //SPO2
 #define MAX_BRIGHTNESS 255
-uint16_t irBuffer[50]; //infrared LED sensor data
-uint16_t redBuffer[50]; //red LED sensor data
-int at = 0;
 const byte bufferLength = 50;
+uint16_t irBuffer[bufferLength]; //infrared LED sensor data
+uint16_t redBuffer[bufferLength]; //red LED sensor data
+int at = 0;
 int32_t spo2_val;
+
+//Temperature
+//
+//some vars
+//
+
+//Bluetooth
+//
+//some vars
+//
 
 void setup(){
   Serial.begin(115200);
   // Initialize sensor
   Serial.println(F("Place index"));
-  if (!particleSensor.begin(Wire, I2C_SPEED_FAST)) //Use default I2C port, 400kHz speed
+  if (!particleSensor.begin(Wire, I2C_SPEED_STANDARD)) //Use default I2C port, 400kHz speed fast 100kHz speed normal
   {
     Serial.println(F("MAX30105 was not found. Please check wiring/power. "));
     while (1);
   }
 
-
   //configure sensor settings
   //byte powerLevel, byte sampleAverage, byte ledMode, int sampleRate, int pulseWidth, int adcRange 
   particleSensor.setup(60, 4, 2, 100, 411, 4096);
   particleSensor.setPulseAmplitudeGreen(0);
+  particleSensor.setPulseAmplitudeRed(0x0A); // indicates that it is on
 }
 
+//Get the data from the sensors and calc the needed info
 void loop(){
   calculate_vals();
   Serial.println();
@@ -69,8 +81,9 @@ void calculate_vals(){
 
       //Take average of readings
       beatAvg = 0;
-      for (byte x = 0 ; x < RATE_SIZE ; x++)
-        beatAvg += rates[x];
+      for (byte x = 0 ; x < RATE_SIZE ; x++){
+        beatAvg += rates[x]; 
+      }
       beatAvg /= RATE_SIZE;
     }
   }
@@ -96,5 +109,9 @@ void print_info(long irValue){
   Serial.print(beatAvg);
   Serial.print(F(", SPO2="));
   Serial.print(spo2_val);
+}
+
+void send(){
+  //send the data to the toy/receiver
 }
 
