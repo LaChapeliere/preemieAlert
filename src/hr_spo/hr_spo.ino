@@ -42,7 +42,7 @@ void setup(){
   Serial.begin(115200);
   // Initialize sensor
   Serial.println(F("Place index"));
-  if (!particleSensor.begin(Wire, I2C_SPEED_STANDARD)) //Use default I2C port, 400kHz speed fast 100kHz speed normal
+  if (!particleSensor.begin(Wire, I2C_SPEED_FAST)) //Use default I2C port, 400kHz speed fast 100kHz speed normal
   {
     Serial.println(F("MAX30105 was not found. Please check wiring/power. "));
     while (1);
@@ -68,10 +68,9 @@ void calculate_vals(){
   irBuffer[i] = (uint16_t)irValue;
       
   if (checkForBeat(irValue) == true){
-    Serial.println(F("THERE IS  A BEATTTT"));
-    //We sensed a beat!
-    long delta = millis() - lastBeat;
-    lastBeat = millis();
+    long cTime = millis();
+    long delta = cTime - lastBeat;
+    lastBeat = cTime;
 
     beatsPerMinute = 60 / (delta / 1000.0);
 
