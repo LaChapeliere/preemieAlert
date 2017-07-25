@@ -5,7 +5,7 @@
  */
 
 #include "SparkFunMLX90614.h" // SparkFunMLX90614 Arduino library
-#include <Wire.h> // I2C library, required for MLX90614
+#include <Wire.h>             // I2C library, required for MLX90614
 
 //Thermometer sensor set up
 IRTherm thermometer;
