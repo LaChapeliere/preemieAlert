@@ -4,7 +4,10 @@
 #
 
 #please install click with pip install Click
-import sys, click 
+import sys, click, argparse 
+from pythonosc import osc_message_builder
+from pythonosc import udp_client
+
 
 @click.command()
 def choose_simulation() :

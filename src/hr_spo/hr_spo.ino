@@ -23,8 +23,8 @@ int beatAvg;
 //SPO2
 #define MAX_BRIGHTNESS 255
 const byte bufferLength = 50;
-uint16_t irBuffer[bufferLength]; //infrared LED sensor data
-uint16_t redBuffer[bufferLength]; //red LED sensor data
+uint32_t irBuffer[bufferLength]; //infrared LED sensor data
+uint32_t redBuffer[bufferLength]; //red LED sensor data
 int at = 0;
 int32_t spo2_val;
 

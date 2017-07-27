@@ -14,10 +14,10 @@ float ambient_val = 0;
 
 void setup() {
   Serial.begin(115200);
-  thermometer.begin(0x5B);
+  thermometer.begin(0x5A);
   thermometer.setUnit(TEMP_C);
-  thermometer.setMax(85.0);
-  thermometer.setMin(-20.0);
+  //thermometer.setMax(85.0);
+  //thermometer.setMin(-20.0);
   Serial.println(F("Temperature Readings"));
 }
 
