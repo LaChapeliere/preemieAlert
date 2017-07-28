@@ -14,6 +14,14 @@
 
   Written by Limor Fried/Ladyada for Adafruit Industries.  
   BSD license, all text above must be included in any redistribution
+
+  Source and diagrams:https://learn.adafruit.com/using-melexis-mlx90614-non-contact-sensors/wiring-and-test
+  
+  Connections: 
+  * A4:SDA 
+  * A5:SCL
+  * 3.3v
+  * GND
  ****************************************************/
 
 #include <Wire.h>
