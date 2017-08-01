@@ -14,6 +14,7 @@
 #include <OSCTiming.h>
 #include <SLIPEncodedSerial.h>
 #include <SLIPEncodedUSBSerial.h>
+#include <Adafruit_NeoPixel.h>
 
 // Set your wifi network configuration here
 char * ssid = "movuino-02";                     // your network SSID (name of the wifi network)
@@ -35,8 +36,13 @@ float lastButtonTime;
 boolean lockPress = false; // avoid several activation on same button pressure
 
 // LEDs
+#define NUMPIXELS 5
+#define PINNEOPIXEL 15 //pin for the neopixel strip
 const int pinLedWifi = 2; // wifi led indicator
 const int pinLedBat = 0;  // battery led indicator
+int delayval = 500; // delay for half a second
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PINNEOPIXEL, NEO_GRB + NEO_KHZ800);
+
 
 // Vibrator
 const int pinVibro = 14;  // vibrator pin
@@ -59,6 +65,10 @@ WiFiUDP Udp;
 OSCErrorCode error;
 
 void setup() {
+   pixels.begin(); // This initializes the NeoPixel library.
+   pixels.setPixelColor(0, pixels.Color(0,0,0));
+   pixels.show();
+  
   // pin setup
   pinMode(pinBtn, INPUT_PULLUP); // pin for the button
   pinMode(pinLedWifi, OUTPUT);   // pin for the wifi led
@@ -124,6 +134,22 @@ void loop() {
     delay(50); // wait more if Movuino is sleeping
   }
 }
+
+void callbackFilter(OSCMessage &msg) {
+  int pixelNb = msg.getInt(0);
+  Serial.println(pixelNb);
+  // pixels.Color takes RGB values, from 0,0,0 up to 255,255,255
+  pixels.setPixelColor(pixelNb, pixels.Color(150,0,0)); // Moderately bright green color.
+
+  pixels.show(); // This sends the updated pixel color to the hardware.
+
+  delay(delayval); // Delay for a period of time (in milliseconds).
+  pixels.setPixelColor(pixelNb, pixels.Color(0,0,0)); // Moderately bright green color.
+  pixels.show(); 
+  delay(delayval);
+  
+}
+
 float splitFloatDecimal(float f_){
   int i_ = f_ * 1000;
   return i_/1000.0f;

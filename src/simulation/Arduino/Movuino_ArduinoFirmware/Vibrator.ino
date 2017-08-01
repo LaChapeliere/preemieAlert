@@ -1,11 +1,6 @@
 //-----------------------------------------------
 //--------------- VIBRO PULSE -------------------
 //-----------------------------------------------
-void callbackFilter(OSCMessage &msg) {
-  dVibON = msg.getInt(0);
-
-  setVibroPulse(dVibON * 500,0,1);
-}
 
 void callbackVibroPulse(OSCMessage &msg) {
   dVibON = msg.getInt(0);
