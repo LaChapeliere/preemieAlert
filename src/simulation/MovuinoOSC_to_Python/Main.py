@@ -3,6 +3,7 @@ import time
 import numpy as np
 import OSC_communication as osc
 import math
+import random
 
 def main(args = None):
 	# Start OSC server (to receive message)
@@ -21,25 +22,13 @@ def main(args = None):
 	timer1 = timer0
 	while (timer1-timer0 < 10):
 		timer1 = time.time()
-		time.sleep(0.05)
+		time.sleep(1)
 
-		# RECEIVE MOVUINO DATA
-		curAddr, curVal = osc_server.get_CurrentMessage() # extract address and values of current message
-		if curAddr == "movuinOSC" :
-			ax = float(curVal[0])
-			ay = float(curVal[1])
-			az = float(curVal[2])
-			gx = float(curVal[3])
-			gy = float(curVal[4])
-			gz = float(curVal[5])
-
-			print ax, ay, az, gx, gy, gz
-
-			d1 = 100 * math.sqrt(ax**2 + ay**2 + az**2) # compute euclidan distance (example)
-			d2 = 100 * math.sqrt(gx**2 + gy**2 + gz**2) # compute euclidan distance (example)
-
+		
 		# SEND MESSAGE TO MOVUINO
-		osc_client.sendOSCMessage('filter', 0) # send back accelerometer euclidian distance to Movuino (useless but just for the example)
+		randNumber = random.randint(0,4)
+		print randNumber
+		osc_client.sendOSCMessage('filter', randNumber) # send random int between 0 and 5
 
 		print "---------------"
 

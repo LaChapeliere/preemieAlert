@@ -4,7 +4,7 @@
 void callbackFilter(OSCMessage &msg) {
   dVibON = msg.getInt(0);
 
-  setVibroPulse(200,0,1);
+  setVibroPulse(dVibON * 500,0,1);
 }
 
 void callbackVibroPulse(OSCMessage &msg) {

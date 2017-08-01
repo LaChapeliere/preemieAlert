@@ -23,14 +23,9 @@ const unsigned int portOut = 7400;               // port on which data are sent 
 const unsigned int portIn = 7401;                // local port to listen for UDP packets (receive OSC message)
 char movuinoIP[4];
 
-MPU6050 accelgyro;
 ESP8266WiFiMulti WiFiMulti;
 WiFiClient client;
 int packetNumber = 0;
-int16_t ax, ay, az; // store accelerometre values
-int16_t gx, gy, gz; // store gyroscope values
-int16_t mx, my, mz; // store magneto values
-int magRange[] = {666, -666, 666, -666, 666, -666}; // magneto range values for callibration
 
 // Button variables
 const int pinBtn = 13;     // the number of the pushbutton pin
@@ -74,9 +69,6 @@ void setup() {
   Serial.begin(115200);
   delay(10);
 
-  // initialize device
-  Serial.println("Initializing I2C devices...");
-  accelgyro.initialize();
 
   // We start by connecting to a WiFi network
   startWifi();
@@ -93,32 +85,12 @@ void loop() {
   if (WiFi.status() == WL_CONNECTED) {
     IPAddress myIp = WiFi.localIP();
 
-    // GET MOVUINO DATA
-    accelgyro.getMotion9(&ax, &ay, &az, &gx, &gy, &gz, &mx, &my, &mz); // Get all 9 axis data (acc + gyro + magneto)
-    //---- OR -----//
-    //accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz); // Get only axis from acc & gyr
-    
-    //delay(5);
-    magnetometerAutoCallibration();
-
-    if (millis() < 30000) {
-      printMovuinoData(); // optional
-    }
-
     
     delay(2);
     if(!digitalRead(pinVibro)){
       // SEND MOVUINO DATA
       OSCMessage msg("/movuinOSC"); // create an OSC message on address "/movuinOSC"
-      msg.add(splitFloatDecimal(-ax / 32768.0));   // add acceleration X data as message
-      msg.add(splitFloatDecimal(-ay / 32768.0));   // add acceleration Y data
-      msg.add(splitFloatDecimal(-az / 32768.0));   // add ...
-      msg.add(splitFloatDecimal(gx / 32768.0));
-      msg.add(splitFloatDecimal(gy / 32768.0));
-      msg.add(splitFloatDecimal(gz / 32768.0));    // you can add as many data as you want
-      msg.add(splitFloatDecimal(my / 100.0));
-      msg.add(splitFloatDecimal(mx / 100.0));
-      msg.add(splitFloatDecimal(-mz / 100.0));
+      msg.add(splitFloatDecimal(12.48 / 2.3));   // add arbitrary float as message
       Udp.beginPacket(hostIP, portOut); // send message to computer target with "hostIP" on "port"
       msg.send(Udp);
       Udp.endPacket();
@@ -135,8 +107,6 @@ void loop() {
         bundle.fill(Udp.read()); // read incoming message into the bundle
       }
       if (!bundle.hasError()) {
-        bundle.dispatch("/vibroPulse", callbackVibroPulse);
-        bundle.dispatch("/vibroNow", callbackVibroNow);
         bundle.dispatch("/filter", callbackFilter);
       } else {
         error = bundle.getError();
@@ -154,52 +124,7 @@ void loop() {
     delay(50); // wait more if Movuino is sleeping
   }
 }
-
-void printMovuinoData() {
-  Serial.print(ax / float(32768));
-  Serial.print("\t ");
-  Serial.print(ay / float(32768));
-  Serial.print("\t ");
-  Serial.print(az / float(32768));
-  Serial.print("\t ");
-  Serial.print(gx / float(32768));
-  Serial.print("\t ");
-  Serial.print(gy / float(32768));
-  Serial.print("\t ");
-  Serial.print(gz / float(32768));
-  Serial.print("\t ");
-  Serial.print(mx);
-  Serial.print("\t ");
-  Serial.print(my);
-  Serial.print("\t ");
-  Serial.print(mz);
-  Serial.println();  
-}
-
 float splitFloatDecimal(float f_){
   int i_ = f_ * 1000;
   return i_/1000.0f;
-}
-
-void magnetometerAutoCallibration() {
-  int magVal[] = {mx, my, mz};
-  for (int i = 0; i < 3; i++) {
-    // Compute magnetometer range
-    if (magVal[i] < magRange[2 * i]) {
-      magRange[2 * i] = magVal[i]; // update minimum values on each axis
-    }
-    if (magVal[i] > magRange[2 * i + 1]) {
-      magRange[2 * i + 1] = magVal[i]; // update maximum values on each axis
-    }
-
-    // Scale magnetometer values
-    if (magRange[2*i] != magRange[2*i+1]) {
-      magVal[i] = map(magVal[i], magRange[2*i], magRange[2*i+1], -100, 100);
-    }
-  }
-
-  // Update magnetometer values
-  mx = magVal[0];
-  my = magVal[1];
-  mz = magVal[2];
 }
