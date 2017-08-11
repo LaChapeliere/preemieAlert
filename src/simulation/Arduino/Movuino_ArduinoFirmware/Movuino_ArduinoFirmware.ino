@@ -136,15 +136,15 @@ void loop() {
 }
 
 void callbackFilter(OSCMessage &msg) {
-  int pixelNb = msg.getInt(0);
+  int pixelNb = msg.getInt(0); // Get the index of the LED to change
   Serial.println(pixelNb);
   // pixels.Color takes RGB values, from 0,0,0 up to 255,255,255
-  pixels.setPixelColor(pixelNb, pixels.Color(150,0,0)); // Moderately bright green color.
+  pixels.setPixelColor(pixelNb, pixels.Color(150,0,0)); // Moderately bright green colour.
 
   pixels.show(); // This sends the updated pixel color to the hardware.
 
   delay(delayval); // Delay for a period of time (in milliseconds).
-  pixels.setPixelColor(pixelNb, pixels.Color(0,0,0)); // Moderately bright green color.
+  pixels.setPixelColor(pixelNb, pixels.Color(0,0,0)); //  Back to no colour.
   pixels.show(); 
   delay(delayval);
   
