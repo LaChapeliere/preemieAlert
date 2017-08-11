@@ -19,8 +19,9 @@ def choose_simulation() :
 #Chosen simulation
 def keypressed(event) :
         if event > 0 and event < 7:
-                osc_client.sendOSCMessage('filter', (event - 1)) # send random int between 0 and 5
+                osc_client.sendOSCMessage('filter', (event - 1)) # send int on WIFI corresponding to keypress event
         
+	# print for debug
 	if event == 1 :
 		print('Low BPM')
 	elif event == 2:
